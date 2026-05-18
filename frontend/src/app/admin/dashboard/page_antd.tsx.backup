@@ -1,0 +1,570 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { 
+  Layout, 
+  Menu, 
+  Button, 
+  Card, 
+  Row, 
+  Col, 
+  Statistic, 
+  Table, 
+  Tag, 
+  Space, 
+  Typography, 
+  ConfigProvider, 
+  Form, 
+  Input, 
+  message, 
+  Avatar, 
+  List,
+  Typography as AntTypography
+} from 'antd';
+import {
+  DashboardOutlined,
+  PictureOutlined,
+  LineChartOutlined,
+  BookOutlined,
+  MessageOutlined,
+  TeamOutlined,
+  MailOutlined,
+  InfoCircleOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  UserOutlined,
+  CheckCircleOutlined,
+  DownOutlined,
+  LogoutOutlined,
+  ShieldOutlined,
+  GlobeOutlined,
+  SettingOutlined,
+  LockOutlined,
+  BellOutlined,
+  SecurityScanOutlined
+} from '@ant-design/icons';
+import { API_ROUTES, API_BASE_URL } from '@/lib/config';
+
+const { Header, Sider, Content } = Layout;
+const { Title, Text } = Typography;
+const { TextArea } = Input;
+
+export default function AdminDashboardAntd() {
+  const [collapsed, setCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [mounted, setMounted] = useState(false);
+  
+  // Data States
+  const [gallery, setGallery] = useState<any[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [partnersList, setPartnersList] = useState<any[]>([]);
+  const [footerSettings, setFooterSettings] = useState({ address: "", phone: "", email: "" });
+  const [aboutSettings, setAboutSettings] = useState({ text: "", image: "", pinpoints: [] as string[] });
+  
+  // Loading States
+  const [loading, setLoading] = useState(false);
+
+  // Fetchers
+  const fetchGallery = async () => {
+    try {
+      const res = await fetch(API_ROUTES.GALLERY);
+      const data = await res.json();
+      setGallery(data);
+    } catch (err) { console.error(err); }
+  };
+  
+  const fetchCourses = async () => {
+    try {
+      const res = await fetch(API_ROUTES.COURSES);
+      const data = await res.json();
+      setCourses(data);
+    } catch (err) { console.error(err); }
+  };
+  
+  const fetchTestimonials = async () => {
+    try {
+      const res = await fetch(API_ROUTES.TESTIMONIALS);
+      const data = await res.json();
+      setTestimonials(data);
+    } catch (err) { console.error(err); }
+  };
+  
+  const fetchPartners = async () => {
+    try {
+      const res = await fetch(API_ROUTES.PARTNERS);
+      const data = await res.json();
+      setPartnersList(data);
+    } catch (err) { console.error(err); }
+  };
+
+  const fetchSettings = async (key, setter) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/settings/${key}`);
+      if (res.ok) {
+        const data = await res.json();
+        setter(data);
+      }
+    } catch (err) { console.error(err); }
+  };
+
+  useEffect(() => {
+    setMounted(true);
+    fetchGallery();
+    fetchCourses();
+    fetchTestimonials();
+    fetchPartners();
+    fetchSettings("footer", setFooterSettings);
+    fetchSettings("about", setAboutSettings);
+  }, []);
+
+  // Theme Config
+  const themeConfig = {
+    token: {
+      colorPrimary: '#5932EA',
+      borderRadius: 12,
+      fontFamily: "'Inter', sans-serif",
+    },
+  };
+
+  // Sidebar Items
+  const menuItems = [
+    { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
+    { key: 'gallery', icon: <PictureOutlined />, label: 'Events Gallery' },
+    { key: 'stats', icon: <LineChartOutlined />, label: 'Live Counter' },
+    { key: 'courses', icon: <BookOutlined />, label: 'Courses' },
+    { key: 'testimonials', icon: <MessageOutlined />, label: 'Testimonials' },
+    { key: 'partners', icon: <TeamOutlined />, label: 'Partners' },
+    { key: 'admin_settings', icon: <ShieldOutlined />, label: 'Admin Settings' },
+    { key: 'about_content', icon: <InfoCircleOutlined />, label: 'About Us' },
+    { key: 'logout', icon: <LogoutOutlined />, label: 'Logout', danger: true },
+  ];
+
+  // Render Content based on activeTab
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return (
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <Title level={2}>Dashboard Overview</Title>
+            <Row gutter={[24, 24]}>
+              <Col xs={24} sm={12} lg={6}>
+                <Card bordered={false} className="white-card">
+                  <Statistic title="Total Students" value={1250} prefix={<UserOutlined />} />
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} lg={6}>
+                <Card bordered={false} className="white-card">
+                  <Statistic title="Active Courses" value={courses.length} prefix={<BookOutlined />} />
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} lg={6}>
+                <Card bordered={false} className="white-card">
+                  <Statistic title="Placement Rate" value={85} suffix="%" />
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} lg={6}>
+                <Card bordered={false} className="white-card">
+                  <Statistic title="Total Partners" value={partnersList.length} prefix={<TeamOutlined />} />
+                </Card>
+              </Col>
+            </Row>
+            
+            <Card title="Enrollment Growth" bordered={false} className="white-card">
+              <div style={{ height: 300, background: '#f0f2f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Text type="secondary">Chart Placeholder (Smooth Area Chart)</Text>
+              </div>
+            </Card>
+          </Space>
+        );
+        
+      case 'courses':
+        return (
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Title level={2}>Courses Management</Title>
+              <Button type="primary" icon={<PlusOutlined />}>Add Course</Button>
+            </div>
+            
+            <Table 
+              dataSource={courses} 
+              columns={[
+                { title: 'Title', dataIndex: 'title', key: 'title' },
+                { title: 'Slug', dataIndex: 'slug', key: 'slug', responsive: ['md'] },
+                { title: 'Status', key: 'status', render: () => <Tag color="blue">Active</Tag> },
+                { 
+                  title: 'Actions', 
+                  key: 'actions', 
+                  render: (_, record) => (
+                    <Space size="middle">
+                      <Button type="text" icon={<EditOutlined />} />
+                      <Button type="text" danger icon={<DeleteOutlined />} />
+                    </Space>
+                  ) 
+                },
+              ]}
+              rowKey="_id"
+              className="white-card"
+              scroll={{ x: true }}
+            />
+          </Space>
+        );
+        
+      case 'testimonials':
+        return (
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <Title level={2}>Testimonials</Title>
+            <List
+              className="white-card"
+              itemLayout="horizontal"
+              dataSource={testimonials}
+              renderItem={(item) => (
+                <List.Item
+                  actions={[
+                    <Button type="text" icon={<EditOutlined />}>Edit</Button>,
+                    <Button type="text" danger icon={<DeleteOutlined />}>Delete</Button>
+                  ]}
+                >
+                  <List.Item.Meta
+                    avatar={<Avatar icon={<UserOutlined />} />}
+                    title={item.name}
+                    description={item.role}
+                  />
+                  <div>{item.text}</div>
+                </List.Item>
+              )}
+            />
+          </Space>
+        );
+
+      case 'partners':
+        return (
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <Title level={2}>Partners</Title>
+            <Row gutter={[16, 16]}>
+              {partnersList.map((partner) => (
+                <Col xs={24} sm={12} md={8} lg={6} key={partner._id}>
+                  <Card 
+                    hoverable 
+                    className="white-card"
+                    cover={partner.image ? <img alt={partner.name} src={partner.image} style={{ height: 100, width: "auto", objectFit: 'contain', padding: 20 }} /> : <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}><TeamOutlined style={{ fontSize: 24, color: '#bfbfbf' }} /></div>}
+                    actions={[
+                      <DeleteOutlined key="delete" onClick={() => message.info('Delete click')} />
+                    ]}
+                  >
+                    <Card.Meta title={partner.name} />
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Space>
+        );
+
+      case 'admin_settings':
+        return (
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <Title level={2}>Admin Portal Settings</Title>
+            <div className="white-card" style={{ padding: '0' }}>
+              <Menu 
+                mode="horizontal" 
+                selectedKeys={[settingsTab]} 
+                onClick={({ key }) => setSettingsTab(key)}
+                items={[
+                  { key: 'personal', icon: <UserOutlined />, label: 'User Profile' },
+                  { key: 'society', icon: <GlobeOutlined />, label: 'Society Profile' },
+                  { key: 'system', icon: <SettingOutlined />, label: 'System Config' },
+                ]}
+                style={{ borderBottom: '1px solid #f0f0f0', padding: '0 20px' }}
+              />
+              <div style={{ padding: '32px' }}>
+                {settingsTab === 'personal' && (
+                  <Space direction="vertical" size="xlarge" style={{ width: '100%' }}>
+                    <Row gutter={48} align="middle">
+                      <Col>
+                        <Avatar size={100} src="https://i.pinimg.com/736x/39/d2/45/39d24540b452bb81e3afde40a8b9edf5.jpg" />
+                      </Col>
+                      <Col>
+                        <Title level={3} style={{ margin: 0 }}>Admin | Sunvision</Title>
+                        <Tag color="gold">SUPER ADMIN</Tag>
+                        <Text type="secondary" block>admin@sunvision.com</Text>
+                      </Col>
+                    </Row>
+                    
+                    <Divider />
+                    
+                    <Form layout="vertical">
+                      <Title level={4}><LockOutlined /> Security & Credentials</Title>
+                      <Row gutter={16}>
+                        <Col xs={24} md={12}>
+                          <Form.Item label="Full Name">
+                            <Input defaultValue="Admin | Sunvision" />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item label="Email Address">
+                            <Input defaultValue="admin@sunvision.com" prefix={<MailOutlined />} />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row gutter={16}>
+                        <Col xs={24} md={8}><Form.Item label="Current Password"><Input.Password /></Form.Item></Col>
+                        <Col xs={24} md={8}><Form.Item label="New Password"><Input.Password /></Form.Item></Col>
+                        <Col xs={24} md={8}><Form.Item label="Confirm Password"><Input.Password /></Form.Item></Col>
+                      </Row>
+                      
+                      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Button 
+                          type="primary" 
+                          size="large" 
+                          shape="round"
+                          onClick={async () => {
+                            const token = localStorage.getItem("adminToken");
+                            if (!token) {
+                              message.error("Session expired. Please login again.");
+                              return;
+                            }
+                            try {
+                              const response = await fetch(`${API_BASE_URL}/api/auth/update`, {
+                                method: "PUT",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                  Authorization: `Bearer ${token}`,
+                                },
+                                body: JSON.stringify({
+                                  username: "admin", // Need to get this from state
+                                  fullName: "Admin | Sunvision",
+                                  email: "admin@sunvision.com"
+                                }),
+                              });
+
+                              const contentType = response.headers.get("content-type");
+                              if (contentType && contentType.indexOf("application/json") !== -1) {
+                                const data = await response.json();
+                                if (!response.ok) throw new Error(data.message || "Update failed");
+                                message.success("Profile updated successfully!");
+                              } else {
+                                throw new Error(`Server returned non-JSON response (${response.status})`);
+                              }
+                            } catch (err: any) {
+                              message.error("Update failed: " + err.message);
+                            }
+                          }}
+                        >
+                          Update Profile
+                        </Button>
+                      </div>
+                    </Form>
+                  </Space>
+                )}
+
+                {settingsTab === 'society' && (
+                  <Form layout="vertical">
+                    <Row gutter={32}>
+                      <Col xs={24} lg={12}>
+                        <Form.Item label="Society Name"><Input defaultValue="Sunvision Society" /></Form.Item>
+                        <Form.Item label="Registration ID"><Input defaultValue="REG123456789" /></Form.Item>
+                        <Form.Item label="Phone"><Input defaultValue="+91 97030 54999" /></Form.Item>
+                      </Col>
+                      <Col xs={24} lg={12}>
+                        <Form.Item label="Headquarters Address"><TextArea rows={4} defaultValue="Dilsukhnagar, Hyderabad, TG" /></Form.Item>
+                        <Card size="small" title="Society Logos" style={{ background: '#fafafa' }}>
+                           <Space direction="vertical" style={{ width: '100%' }}>
+                             <div style={{ background: '#fff', padding: '10px', borderRadius: '8px', border: '1px solid #eee', textAlign: 'center' }}>
+                               <img src="https://sunvisionsociety.com/uploads/1596723247_logo.png" alt="logo" style={{ height: 30, width: "auto" }} />
+                             </div>
+                             <Button block icon={<PlusOutlined />}>Change Logo</Button>
+                           </Space>
+                        </Card>
+                      </Col>
+                    </Row>
+                    <Divider />
+                    <Title level={4}><GlobeOutlined /> Social Links</Title>
+                    <Row gutter={16}>
+                      <Col span={6}><Form.Item label="Facebook"><Input /></Form.Item></Col>
+                      <Col span={6}><Form.Item label="LinkedIn"><Input /></Form.Item></Col>
+                      <Col span={6}><Form.Item label="Instagram"><Input /></Form.Item></Col>
+                      <Col span={6}><Form.Item label="Twitter"><Input /></Form.Item></Col>
+                    </Row>
+                    <Button type="primary">Save Organization Settings</Button>
+                  </Form>
+                )}
+                
+                {settingsTab === 'system' && (
+                  <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                     <Card bordered={false} style={{ background: '#fff7e6' }}>
+                        <Row justify="space-between" align="middle">
+                          <Col>
+                            <Title level={4} style={{ margin: 0 }}><SecurityScanOutlined /> Maintenance Mode</Title>
+                            <Text>Stop public traffic for site updates</Text>
+                          </Col>
+                          <Col><Button danger>Enable</Button></Col>
+                        </Row>
+                     </Card>
+                     
+                     <Row gutter={24}>
+                        <Col span={12}>
+                          <Card title="System Alerts" icon={<BellOutlined />}>
+                             <Space direction="vertical">
+                               <Button type="link">Configure Email Notifications</Button>
+                               <Button type="link">Manage Audit Logs</Button>
+                             </Space>
+                          </Card>
+                        </Col>
+                        <Col span={12}>
+                          <Card title="Localization">
+                             <Form layout="vertical">
+                               <Form.Item label="Timezone"><Select defaultValue="IST" options={[{value: 'IST', label: 'IST (UTC+5:30)'}]} /></Form.Item>
+                               <Form.Item label="Date Format"><Select defaultValue="DMY" options={[{value: 'DMY', label: 'DD/MM/YYYY'}]} /></Form.Item>
+                             </Form>
+                          </Card>
+                        </Col>
+                     </Row>
+                  </Space>
+                )}
+              </div>
+            </div>
+          </Space>
+        );
+
+      case 'footer_content':
+        return (
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <Title level={2}>Contact & Footer</Title>
+            <Card className="white-card">
+              <Form layout="vertical" initialValues={footerSettings}>
+                <Form.Item label="Address" name="address">
+                  <TextArea rows={4} />
+                </Form.Item>
+                <Form.Item label="Phone Number" name="phone">
+                  <Input />
+                </Form.Item>
+                <Form.Item label="Email Address" name="email">
+                  <Input />
+                </Form.Item>
+                <Form.Item>
+                  <Button type="primary">Save Changes</Button>
+                </Form.Item>
+              </Form>
+            </Card>
+          </Space>
+        );
+
+      case 'about_content':
+        return (
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <Title level={2}>About Us</Title>
+            <Card className="white-card">
+              <Form layout="vertical" initialValues={aboutSettings}>
+                <Form.Item label="Main Description" name="text">
+                  <TextArea rows={6} />
+                </Form.Item>
+                <Form.Item label="Image URL" name="image">
+                  <Input />
+                </Form.Item>
+                <Form.Item label="Key Points">
+                  <List
+                    dataSource={aboutSettings.pinpoints}
+                    renderItem={(item) => (
+                      <List.Item>
+                        <Input value={item} style={{ width: '80%' }} />
+                        <Button type="text" danger icon={<DeleteOutlined />} />
+                      </List.Item>
+                    )}
+                  />
+                  <Button type="dashed" icon={<PlusOutlined />} style={{ width: '100%', marginTop: 10 }}>Add Point</Button>
+                </Form.Item>
+                <Form.Item>
+                  <Button type="primary">Save Changes</Button>
+                </Form.Item>
+              </Form>
+            </Card>
+          </Space>
+        );
+        
+      default:
+        return <Title level={2}>Select a module</Title>;
+    }
+  };
+
+  return (
+    <ConfigProvider theme={themeConfig}>
+      <Layout style={{ minHeight: '100vh', background: '#F6F8FA' }}>
+        <Sider 
+          trigger={null} 
+          collapsible 
+          collapsed={collapsed}
+          breakpoint="lg"
+          collapsedWidth="0"
+          onCollapse={(value) => setCollapsed(value)}
+          theme="light"
+          style={{ 
+            borderRight: '1px solid #E5E7EB',
+            height: '100vh',
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            zIndex: 1001
+          }}
+        >
+          <div style={{ padding: '20px 16px', display: 'flex', justifyContent: 'center' }}>
+            <Image 
+              src="https://sunvisionsociety.com/uploads/1596723247_logo.png" 
+              alt="Logo" 
+              width={150} 
+              height={40} 
+              style={{ height: "40px", width: "auto" }} 
+              priority
+            />
+          </div>
+          <Menu
+            mode="inline"
+            selectedKeys={[activeTab]}
+            items={menuItems}
+            onClick={({ key }) => {
+              if (key === 'logout') {
+                localStorage.removeItem("adminToken");
+                router.push("/admin/login");
+              } else {
+                setActiveTab(key);
+              }
+            }}
+            style={{ borderRight: 0 }}
+          />
+        </Sider>
+        <Layout style={{ marginLeft: collapsed ? 0 : 200, transition: 'all 0.2s' }}>
+          <Header style={{ background: '#fff', padding: 0, display: 'flex', alignItems: 'center', borderBottom: '1px solid #E5E7EB' }}>
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{ fontSize: '16px', width: 64, height: 64 }}
+            />
+            <Title level={4} style={{ margin: 0 }}>Sunvision Admin Portal</Title>
+          </Header>
+          <Content style={{ margin: '24px', minHeight: 280 }}>
+            {mounted ? renderContent() : null}
+          </Content>
+        </Layout>
+      </Layout>
+      
+      <style dangerouslySetInnerHTML={{ __html: `
+        .white-card {
+          background: #fff !important;
+          border-radius: 12px !important;
+          border: 1px solid #E5E7EB !important;
+          box-shadow: none !important;
+        }
+        .ant-layout-sider-light .ant-menu-item-selected {
+          background-color: #F0ECFE !important;
+          color: #5932EA !important;
+        }
+      `}} />
+    </ConfigProvider>
+  );
+}
