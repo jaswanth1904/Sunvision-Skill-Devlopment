@@ -17,10 +17,6 @@ export const metadata: Metadata = {
   description: "Sunvision Society empowers rural youth with free professional skill training and guaranteed job placements in IT, Retail, Telecom, and Electronics sectors.",
   keywords: ["Skill Training", "Free Education", "Job Placement", "Rural Youth Empowerment", "DDUGKY", "Sunvision Society"],
   authors: [{ name: "Sunvision Society" }],
-  icons: {
-    icon: "https://sunvisionsociety.com/uploads/1596723247_logo.png",
-    apple: "https://sunvisionsociety.com/uploads/1596723247_logo.png",
-  },
   openGraph: {
     title: "Sunvision Society | Free Skill Training & Job Placement",
     description: "Empowering rural youth through specialized skilling and ensuring successful placements in high-growth industries.",
