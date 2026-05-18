@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { CourseDetail } from "@/components/CourseDetail";
 import { notFound } from "next/navigation";
+import { API_BASE_URL } from "@/lib/config";
 
 export default async function CoursePage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
@@ -8,7 +9,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
   
   let course;
   try {
-    const response = await fetch(`http://localhost:5000/api/courses/${slug}`, { cache: 'no-store' });
+    const response = await fetch(`${API_BASE_URL}/api/courses/${slug}`, { cache: 'no-store' });
     if (!response.ok) {
       notFound();
     }

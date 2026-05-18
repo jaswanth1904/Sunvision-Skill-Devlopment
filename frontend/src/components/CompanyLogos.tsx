@@ -7,20 +7,6 @@ export function CompanyLogos() {
   const [partners, setPartners] = useState<any[]>([]);
   const [failedImages, setFailedImages] = useState<string[]>([]);
 
-  useEffect(() => {
-    const fetchPartners = async () => {
-      try {
-        const response = await fetch(API_ROUTES.PARTNERS);
-        if (!response.ok) throw new Error("Failed to fetch partners");
-        const data = await response.json();
-        setPartners(data);
-      } catch (err) {
-        console.error("Failed to fetch partners:", err);
-      }
-    };
-    fetchPartners();
-  }, []);
-
   const defaultCompanies = [
     { name: "DMart", color: "text-green-600", font: "font-serif italic" },
     { name: "airtel", color: "text-red-500", font: "font-sans font-black tracking-tighter" },
@@ -30,6 +16,31 @@ export function CompanyLogos() {
     { name: "HDFC Bank", color: "text-blue-800", font: "font-sans font-black" },
     { name: "ICICI Bank", color: "text-orange-600", font: "font-serif font-bold" },
   ];
+
+  useEffect(() => {
+    const fetchPartners = async () => {
+      try {
+        const response = await fetch(API_ROUTES.PARTNERS);
+        if (!response.ok) throw new Error("Failed to fetch partners");
+        const data = await response.json();
+        
+        const mapped = data.map((p: any) => {
+          const matched = defaultCompanies.find(dc => dc.name.toLowerCase() === p.name.toLowerCase());
+          return {
+            ...p,
+            color: matched ? matched.color : "text-gray-500",
+            font: matched ? matched.font : "font-sans font-bold",
+            image: p.image && p.image.includes("photo-1611162617474-5b21e879e113") ? "" : p.image
+          };
+        });
+        
+        setPartners(mapped);
+      } catch (err) {
+        console.error("Failed to fetch partners:", err);
+      }
+    };
+    fetchPartners();
+  }, []);
 
   const companiesToUse = partners.length > 0 ? partners : defaultCompanies;
 
