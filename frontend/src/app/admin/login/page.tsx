@@ -83,7 +83,7 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen bg-cover bg-center flex items-center justify-center relative overflow-hidden" style={{ backgroundImage: "url('https://images.pexels.com/photos/2080960/pexels-photo-2080960.jpeg')" }}>
       {/* Overlay to make content readable */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+      <div className="absolute inset-0 bg-black/40"></div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
