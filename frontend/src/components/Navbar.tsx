@@ -156,14 +156,24 @@ export function Navbar() {
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-50 md:hidden bg-white"
-          >
-            <div className="flex flex-col h-full">
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+            />
+            
+            {/* Sidebar */}
+            <motion.div
+              initial={{ opacity: 0, x: "100%" }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm z-50 md:hidden bg-white shadow-2xl flex flex-col"
+            >
               <div className="flex items-center justify-between p-6 border-b border-gray-100">
                 <Image 
                   src="https://sunvisionsociety.com/uploads/1596723247_logo.png" 
@@ -174,29 +184,30 @@ export function Navbar() {
                 />
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 text-gray-500 hover:text-gray-900"
+                  className="p-2 text-gray-500 hover:text-gray-900 bg-gray-50 rounded-full"
                 >
-                  <X size={28} />
+                  <X size={24} />
                 </button>
               </div>
+              
               <div className="flex-1 overflow-y-auto py-6 px-6">
                 <div className="flex flex-col space-y-6">
                   {navLinks.map((link) => (
                     <div key={link.name}>
                       <Link
                         href={link.href}
-                        className="text-2xl font-black text-gray-900 hover:text-[var(--color-brand-blue)] transition-colors"
+                        className="text-xl font-bold text-gray-900 hover:text-[var(--color-brand-blue)] transition-colors"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         {link.name}
                       </Link>
                       {link.dropdown && (
-                        <div className="mt-4 ml-4 flex flex-col space-y-3 border-l-2 border-gray-100 pl-4">
+                        <div className="mt-3 ml-2 flex flex-col space-y-3 border-l-2 border-gray-100 pl-4">
                           {link.dropdown.map((item) => (
                             <Link
                               key={item.name}
                               href={item.href}
-                              className="text-gray-500 hover:text-[var(--color-brand-blue)] font-medium"
+                              className="text-gray-600 hover:text-[var(--color-brand-blue)] text-sm font-medium"
                               onClick={() => setIsMobileMenuOpen(false)}
                             >
                               {item.name}
@@ -208,17 +219,18 @@ export function Navbar() {
                   ))}
                 </div>
               </div>
-              <div className="p-6 border-t border-gray-100">
+              
+              <div className="p-6 border-t border-gray-100 bg-gray-50/50">
                 <Link
                   href="/admin/login"
-                  className="block w-full py-4 bg-[var(--color-brand-blue)] text-white text-center rounded-2xl font-bold"
+                  className="block w-full py-4 bg-[var(--color-brand-blue)] hover:bg-blue-700 transition-colors text-white text-center rounded-2xl font-bold shadow-lg shadow-blue-900/20"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Admin Portal
                 </Link>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </nav>

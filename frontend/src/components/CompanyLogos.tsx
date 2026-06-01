@@ -30,7 +30,7 @@ export function CompanyLogos() {
             ...p,
             color: matched ? matched.color : "text-gray-500",
             font: matched ? matched.font : "font-sans font-bold",
-            image: p.image && p.image.includes("photo-1611162617474-5b21e879e113") ? "" : p.image
+            image: (p.image && (p.image.startsWith('http') || p.image.startsWith('/')) && !p.image.includes("photo-1611162617474-5b21e879e113")) ? p.image : ""
           };
         });
         

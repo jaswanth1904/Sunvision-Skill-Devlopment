@@ -26,7 +26,7 @@ export function CourseCard({ title, description, image, link }: CourseCardProps)
       <Card className="overflow-hidden h-full flex flex-col group border-0 shadow-sm hover:shadow-2xl transition-all duration-500 bg-white rounded-3xl">
         <div className="relative h-64 overflow-hidden">
           <img
-            src={image}
+            src={(image && (image.startsWith('http') || image.startsWith('/'))) ? image : 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop'}
             alt={title}
             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
           />

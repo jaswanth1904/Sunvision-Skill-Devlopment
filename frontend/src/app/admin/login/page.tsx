@@ -12,6 +12,8 @@ export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
@@ -29,6 +31,24 @@ export default function AdminLogin() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    let valid = true;
+    if (!username.trim()) {
+      setUsernameError("Username is required");
+      valid = false;
+    } else {
+      setUsernameError("");
+    }
+
+    if (!password.trim()) {
+      setPasswordError("Password is required");
+      valid = false;
+    } else {
+      setPasswordError("");
+    }
+
+    if (!valid) return;
+
     setLoading(true);
     setError("");
 
@@ -115,6 +135,7 @@ export default function AdminLogin() {
                   placeholder="Enter your username"
                 />
               </div>
+              {usernameError && <p className="mt-1 text-xs text-red-400">{usernameError}</p>}
             </div>
 
             <div>
@@ -135,6 +156,7 @@ export default function AdminLogin() {
                   placeholder="Enter your password"
                 />
               </div>
+              {passwordError && <p className="mt-1 text-xs text-red-400">{passwordError}</p>}
             </div>
 
             {error && (

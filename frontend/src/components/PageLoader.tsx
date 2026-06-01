@@ -12,7 +12,7 @@ export function PageLoader() {
   useEffect(() => {
     // Show loader on route change
     setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 500);
+    const timer = setTimeout(() => setIsLoading(false), 50);
     return () => clearTimeout(timer);
   }, [pathname, searchParams]);
 

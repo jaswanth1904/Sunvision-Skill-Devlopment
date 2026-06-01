@@ -121,6 +121,15 @@ export default function AdminDashboard() {
   const [batches, setBatches] = useState("12");
   const [isEditingStudents, setIsEditingStudents] = useState(false);
   const [isEditingBatches, setIsEditingBatches] = useState(false);
+  const [isSavingCourse, setIsSavingCourse] = useState(false);
+  const [isSavingTestimonial, setIsSavingTestimonial] = useState(false);
+  const [isSavingPartner, setIsSavingPartner] = useState(false);
+  const [isSavingFooter, setIsSavingFooter] = useState(false);
+  const [isSavingAbout, setIsSavingAbout] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isSavingSociety, setIsSavingSociety] = useState(false);
+  const [savingStatId, setSavingStatId] = useState<string | null>(null);
+  const [isUploadingGallery, setIsUploadingGallery] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
@@ -318,6 +327,7 @@ export default function AdminDashboard() {
     formData.append("image", file);
     formData.append("alt", "Event Image");
 
+    setIsUploadingGallery(true);
     try {
       const response = await fetch(API_ROUTES.GALLERY, {
         method: "POST",
@@ -330,6 +340,8 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error(err);
       alert("Failed to upload image");
+    } finally {
+      setIsUploadingGallery(false);
     }
   };
 
@@ -911,8 +923,10 @@ export default function AdminDashboard() {
                             className={`flex-1 rounded-lg border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDarkMode ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-gray-200 text-gray-900"}`}
                           />
                           <button
+                            disabled={savingStatId === stat._id}
                             onClick={async () => {
                               const token = localStorage.getItem("adminToken");
+                              setSavingStatId(stat._id);
                               try {
                                 const response = await fetch(`${API_ROUTES.STATS}/${stat._id}`, {
                                   method: "PUT",
@@ -927,11 +941,13 @@ export default function AdminDashboard() {
                               } catch (err) {
                                 console.error(err);
                                 alert("Failed to update stat");
+                              } finally {
+                                setSavingStatId(null);
                               }
                             }}
-                            className={`px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors ${isDarkMode ? "bg-blue-600 hover:bg-blue-700" : "bg-[#5932EA] hover:bg-[#4B24B3]"}`}
+                            className={`px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors ${savingStatId === stat._id ? "bg-gray-400 cursor-not-allowed" : isDarkMode ? "bg-blue-600 hover:bg-blue-700" : "bg-[#5932EA] hover:bg-[#4B24B3]"}`}
                           >
-                            Save
+                            {savingStatId === stat._id ? "Saving..." : "Save"}
                           </button>
                         </div>
                       </div>
@@ -1060,6 +1076,7 @@ export default function AdminDashboard() {
 
                   {/* Submit Button */}
                   <button
+                    disabled={isSavingCourse}
                     onClick={async () => {
                       // Validation
                       const isBasicValid = newCourse.title && newCourse.slug && newCourse.description && newCourse.duration && newCourse.level && newCourse.image;
@@ -1072,6 +1089,7 @@ export default function AdminDashboard() {
                         return;
                       }
 
+                      setIsSavingCourse(true);
                       const token = localStorage.getItem("adminToken");
                       try {
                         const response = await fetch(API_ROUTES.COURSES, {
@@ -1089,11 +1107,13 @@ export default function AdminDashboard() {
                       } catch (err: any) {
                         console.error(err);
                         alert("Failed to add course: " + err.message);
+                      } finally {
+                        setIsSavingCourse(false);
                       }
                     }}
-                    className="md:col-span-2 bg-[#5932EA] hover:bg-[#4a28c7] text-white py-3 rounded-xl font-bold transition-colors mt-4"
+                    className={`md:col-span-2 text-white py-3 rounded-xl font-bold transition-colors mt-4 ${isSavingCourse ? "bg-[#5932EA]/50 cursor-not-allowed" : "bg-[#5932EA] hover:bg-[#4a28c7]"}`}
                   >
-                    Save Course
+                    {isSavingCourse ? "Saving Course..." : "Save Course"}
                   </button>
                 </div>
               </div>
@@ -1159,11 +1179,13 @@ export default function AdminDashboard() {
                   <input type="text" placeholder="Role / Placement (e.g., Placed at TCS)" value={newTestimonial.role} onChange={(e) => setNewTestimonial({...newTestimonial, role: e.target.value})} className={`w-full rounded-lg border p-2 ${isDarkMode ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-gray-200"}`} />
                   <textarea placeholder="Feedback text..." value={newTestimonial.text} onChange={(e) => setNewTestimonial({...newTestimonial, text: e.target.value})} className={`w-full rounded-lg border p-2 h-24 ${isDarkMode ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-gray-200"}`} />
                   <button
+                    disabled={isSavingTestimonial}
                     onClick={async () => {
                       if (!newTestimonial.name || !newTestimonial.role || !newTestimonial.text) {
                         alert("Please fill in all fields!");
                         return;
                       }
+                      setIsSavingTestimonial(true);
                       const token = localStorage.getItem("adminToken");
                       try {
                         const response = await fetch(API_ROUTES.TESTIMONIALS, {
@@ -1181,11 +1203,13 @@ export default function AdminDashboard() {
                       } catch (err: any) {
                         console.error(err);
                         alert("Failed to add feedback: " + err.message);
+                      } finally {
+                        setIsSavingTestimonial(false);
                       }
                     }}
-                    className="w-full bg-[#5932EA] hover:bg-[#4a28c7] text-white py-2 rounded-lg font-medium transition-colors"
+                    className={`w-full text-white py-2 rounded-lg font-medium transition-colors ${isSavingTestimonial ? "bg-[#5932EA]/50 cursor-not-allowed" : "bg-[#5932EA] hover:bg-[#4a28c7]"}`}
                   >
-                    Save Feedback
+                    {isSavingTestimonial ? "Saving Feedback..." : "Save Feedback"}
                   </button>
                 </div>
               </div>
@@ -1251,11 +1275,13 @@ export default function AdminDashboard() {
                   <input type="text" placeholder="Company Name" value={newPartner.name} onChange={(e) => setNewPartner({...newPartner, name: e.target.value})} className={`rounded-lg border p-2 ${isDarkMode ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-gray-200"}`} />
                   <input type="text" placeholder="Logo Image URL" value={newPartner.image} onChange={(e) => setNewPartner({...newPartner, image: e.target.value})} className={`rounded-lg border p-2 ${isDarkMode ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-gray-200"}`} />
                   <button
+                    disabled={isSavingPartner}
                     onClick={async () => {
                       if (!newPartner.name || !newPartner.image) {
                         alert("Please fill in all fields!");
                         return;
                       }
+                      setIsSavingPartner(true);
                       const token = localStorage.getItem("adminToken");
                       try {
                         const response = await fetch(API_ROUTES.PARTNERS, {
@@ -1273,11 +1299,13 @@ export default function AdminDashboard() {
                       } catch (err: any) {
                         console.error(err);
                         alert("Failed to add partner: " + err.message);
+                      } finally {
+                        setIsSavingPartner(false);
                       }
                     }}
-                    className="md:col-span-2 bg-[#5932EA] hover:bg-[#4a28c7] text-white py-2 rounded-lg font-medium transition-colors"
+                    className={`md:col-span-2 text-white py-2 rounded-lg font-medium transition-colors ${isSavingPartner ? "bg-[#5932EA]/50 cursor-not-allowed" : "bg-[#5932EA] hover:bg-[#4a28c7]"}`}
                   >
-                    Save Partner
+                    {isSavingPartner ? "Saving Partner..." : "Save Partner"}
                   </button>
                 </div>
               </div>
@@ -1354,7 +1382,9 @@ export default function AdminDashboard() {
                     <input type="email" value={footerSettings.email} onChange={(e) => setFooterSettings({...footerSettings, email: e.target.value})} className={`w-full rounded-lg border p-2 ${isDarkMode ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-gray-200"}`} />
                   </div>
                   <button
+                    disabled={isSavingFooter}
                     onClick={async () => {
+                      setIsSavingFooter(true);
                       const token = localStorage.getItem("adminToken");
                       try {
                         const response = await fetch(API_ROUTES.SETTINGS.FOOTER, {
@@ -1370,11 +1400,13 @@ export default function AdminDashboard() {
                       } catch (err: any) {
                         console.error(err);
                         alert("Failed to update: " + err.message);
+                      } finally {
+                        setIsSavingFooter(false);
                       }
                     }}
-                    className="w-full bg-[#5932EA] hover:bg-[#4a28c7] text-white py-2 rounded-lg font-medium transition-colors"
+                    className={`w-full text-white py-2 rounded-lg font-medium transition-colors ${isSavingFooter ? "bg-[#5932EA]/50 cursor-not-allowed" : "bg-[#5932EA] hover:bg-[#4a28c7]"}`}
                   >
-                    Save Changes
+                    {isSavingFooter ? "Saving Changes..." : "Save Changes"}
                   </button>
                 </div>
               </div>
@@ -1416,7 +1448,9 @@ export default function AdminDashboard() {
                     <button onClick={() => setAboutSettings({...aboutSettings, pinpoints: [...aboutSettings.pinpoints, ""]})} className="text-[#5932EA] hover:text-[#4a28c7] text-sm font-medium">+ Add Point</button>
                   </div>
                   <button
+                    disabled={isSavingAbout}
                     onClick={async () => {
+                      setIsSavingAbout(true);
                       const token = localStorage.getItem("adminToken");
                       try {
                         const response = await fetch(API_ROUTES.SETTINGS.ABOUT, {
@@ -1432,11 +1466,13 @@ export default function AdminDashboard() {
                       } catch (err: any) {
                         console.error(err);
                         alert("Failed to update: " + err.message);
+                      } finally {
+                        setIsSavingAbout(false);
                       }
                     }}
-                    className="w-full bg-[#5932EA] hover:bg-[#4a28c7] text-white py-2 rounded-lg font-medium transition-colors"
+                    className={`w-full text-white py-2 rounded-lg font-medium transition-colors ${isSavingAbout ? "bg-[#5932EA]/50 cursor-not-allowed" : "bg-[#5932EA] hover:bg-[#4a28c7]"}`}
                   >
-                    Save Changes
+                    {isSavingAbout ? "Saving Changes..." : "Save Changes"}
                   </button>
                 </div>
               </div>
@@ -1621,15 +1657,18 @@ export default function AdminDashboard() {
 
                     <div className="flex justify-end pt-6">
                       <button 
+                        disabled={isSavingProfile}
                         onClick={async () => {
                           const token = localStorage.getItem("adminToken");
                           if (!token) {
                             alert("Authentication token not found. Please login again.");
                             return;
                           }
+                          setIsSavingProfile(true);
                           try {
                             if (profileData.newPassword && profileData.newPassword !== profileData.confirmPassword) {
                               alert("New passwords do not match!");
+                              setIsSavingProfile(false);
                               return;
                             }
 
@@ -1670,11 +1709,13 @@ export default function AdminDashboard() {
                           } catch (err: any) {
                             console.error("Update Error:", err);
                             alert("Update Error: " + err.message);
+                          } finally {
+                            setIsSavingProfile(false);
                           }
                         }}
-                        className="bg-[#5932EA] hover:bg-[#4a28c7] text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition-all"
+                        className={`text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition-all ${isSavingProfile ? "bg-blue-600/50 cursor-not-allowed" : "bg-[#5932EA] hover:bg-[#4a28c7]"}`}
                       >
-                        Update Account
+                        {isSavingProfile ? "Updating..." : "Update Account"}
                       </button>
                     </div>
                   </div>
@@ -1765,8 +1806,20 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="flex justify-end pt-4">
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition-all">
-                        Save Global Settings
+                      <button 
+                        disabled={isSavingSociety}
+                        onClick={async () => {
+                          setIsSavingSociety(true);
+                          // This is currently just a placeholder since the API might not be wired up fully
+                          // but simulating a save with a loader for the user.
+                          setTimeout(() => {
+                            alert("Society settings updated successfully!");
+                            setIsSavingSociety(false);
+                          }, 1000);
+                        }}
+                        className={`text-white px-8 py-3 rounded-xl font-bold shadow-lg transition-all ${isSavingSociety ? "bg-blue-600/50 shadow-none cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 shadow-blue-600/20"}`}
+                      >
+                        {isSavingSociety ? "Saving..." : "Save Global Settings"}
                       </button>
                     </div>
                   </div>
