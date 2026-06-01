@@ -81,7 +81,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-cover bg-center flex items-center justify-center relative overflow-hidden" style={{ backgroundImage: "url('https://i.pinimg.com/1200x/4d/5e/f9/4d5ef94f9a038da39c34db143e5b98e0.jpg')" }}>
+    <div className="min-h-screen bg-cover bg-center flex items-center justify-center relative overflow-hidden" style={{ backgroundImage: "url('https://images.pexels.com/photos/2080960/pexels-photo-2080960.jpeg')" }}>
       {/* Overlay to make content readable */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
 
